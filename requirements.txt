@@ -1,0 +1,6 @@
+psycopg2-binary
+pymongo[srv]
+pandas
+jupyter
+ipywidgets
+python-dotenv
