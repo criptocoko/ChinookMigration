@@ -57,14 +57,41 @@ La base de datos Chinook es un dataset clásico que simula una tienda de música
 
 El proyecto incluye comparaciones directas entre SQL y MongoDB para:
 
-1. **Búsqueda en playlists**: Tracks en playlists específicas
-2. **Relaciones empleado-cliente**: Clientes atendidos por empleado
-3. **Análisis de ventas**: Clientes ordenados por gasto total
-4. **Ventas por género**: Tracks más vendidos por género musical
-5. **Análisis geográfico**: Ventas por país
-6. **Estadísticas de álbum**: Duración promedio de tracks
-7. **Jerarquías organizacionales**: Reportes empleado-manager
-8. **Historial de compras**: Detalle completo de facturas por cliente
+1. **Búsqueda de playlists por track**: 
+   - SQL: JOIN entre playlist y playlist_track para encontrar playlists que contienen un track específico
+   - MongoDB: Búsqueda directa en array embebido `tracks.track_id`
+
+2. **Clientes atendidos por empleado**: 
+   - SQL: JOIN entre customer y employee por support_rep_id
+   - MongoDB: Acceso directo a array embebido `customers` en colección employees
+
+3. **Ranking de clientes por gasto total**: 
+   - SQL: GROUP BY con SUM de invoice_line (unit_price * quantity) ordenado DESC
+   - MongoDB: Ordenamiento directo por campo precalculado `total_spent`
+
+4. **Tracks más vendidos por género**: 
+   - SQL: JOIN de track, invoice_line, GROUP BY género con SUM de ventas
+   - MongoDB: Filtro por `genre_id` y ordenamiento por `sales.total_revenue`
+
+5. **Tracks más vendidos por país**: 
+   - SQL: JOIN complejo de track, invoice_line, invoice, customer por billing_country
+   - MongoDB: Pipeline de agregación con $unwind de invoices y agrupación por track_id
+
+6. **Duración promedio de tracks en álbum**: 
+   - SQL: AVG(milliseconds) filtrado por album_id
+   - MongoDB: Pipeline de agregación con $unwind de tracks y $avg de milliseconds
+
+7. **Relaciones empleado-cliente**: 
+   - SQL: JOIN entre customer y employee para mostrar representante de ventas
+   - MongoDB: Pipeline con $unwind de customers y concatenación de nombres
+
+8. **Jerarquía organizacional (empleado-manager)**: 
+   - SQL: Self-JOIN de employee para mostrar relaciones reports_to
+   - MongoDB: Campo `reports_to` con nombre del manager precalculado
+
+9. **Historial detallado de compras por cliente**: 
+   - SQL: JOIN múltiple de invoice, customer, invoice_line, track para detalle completo
+   - MongoDB: Pipeline complejo con $unwind de invoices/invoice_lines y $lookup de tracks
 
 ## 🚀 Configuración e Instalación
 
